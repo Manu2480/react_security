@@ -4,45 +4,54 @@ import Swal from "sweetalert2";
 import GenericTable from "../../components/Table/GenericTable";
 import { addressService } from "../../services/addressService";
 import { Address } from "../../models/Address";
+import Breadcrumb from "../../components/Breadcrumb";
 
 const ListAddress: React.FC = () => {
-  const { userId } = useParams<{ userId: string }>(); // id del usuario desde la URL
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
 
-  // Cargar direcciones cuando se monta el componente
   useEffect(() => {
-    if (userId) fetchData(Number(userId));
+    fetchData();
   }, [userId]);
 
-  const fetchData = async (id: number) => {
+  const fetchData = async () => {
+    if (!userId) return;
+
     try {
-      const data = await addressService.getAddressesByUser(id);
-      if (Array.isArray(data)) {
-        setAddresses(data);
-        console.log("Direcciones obtenidas:", data);
+      const response = await addressService.getAddressesByUser(Number(userId));
+
+      if (Array.isArray(response)) {
+        setAddresses(response);
+      } else if (response && typeof response === "object") {
+        // Si devuelve un solo objeto, lo convertimos a array
+        setAddresses([response]);
       } else {
         setAddresses([]);
+        console.log(`El usuario ${userId} no tiene direcciones.`);
       }
     } catch (error: any) {
-      // Si el backend devuelve 404, significa que no hay direcciones para ese usuario
-      if (error.response?.status === 404) {
-        console.log(`El usuario ${id} no tiene direcciones registradas.`);
+      if (error?.response?.status === 404) {
+        console.log(`El usuario ${userId} no tiene direcciones.`);
         setAddresses([]);
       } else {
         console.error("Error al obtener direcciones:", error);
-        Swal.fire("Error", "No fue posible obtener direcciones.", "error");
+        Swal.fire("Error", "No fue posible obtener las direcciones.", "error");
       }
     }
   };
 
-  // Acciones desde la tabla
   const handleAction = async (action: string, item: Address) => {
-    if (action === "edit") navigate(`/addresses/update/${item.id}`);
-    if (action === "delete") await deleteAddress(item);
+    switch (action) {
+      case "edit":
+        navigate(`/addresses/update/${item.id}`);
+        break;
+      case "delete":
+        await deleteAddress(item);
+        break;
+    }
   };
 
-  // Eliminar dirección
   const deleteAddress = async (item: Address) => {
     const result = await Swal.fire({
       title: "Eliminar dirección",
@@ -56,18 +65,16 @@ const ListAddress: React.FC = () => {
     if (!result.isConfirmed) return;
 
     try {
-      await addressService.deleteAddress(item.id!);
-      Swal.fire("Eliminado", "Dirección eliminada correctamente.", "success");
-      if (userId) fetchData(Number(userId));
-    } catch {
+      await addressService.deleteAddress(item.id);
+      Swal.fire("Eliminado", "Dirección eliminada correctamente", "success");
+      fetchData();
+    } catch (error: any) {
       Swal.fire("Error", "No fue posible eliminar la dirección.", "error");
     }
   };
 
-  // Botón para crear nueva dirección
   const renderBotonCrear = () => {
     const onCrear = () => navigate(`/addresses/create/${userId}`);
-
     return (
       <button
         onClick={onCrear}
@@ -80,23 +87,22 @@ const ListAddress: React.FC = () => {
 
   return (
     <div className="p-4">
+      <Breadcrumb pageName="Direcciones" />
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Direcciones del Usuario {userId}</h2>
+        <h2 className="text-xl font-semibold">
+          Direcciones del usuario {userId}
+        </h2>
         {renderBotonCrear()}
       </div>
 
-      {addresses.length === 0 ? (
-        <div className="text-gray-500 italic">No hay direcciones registradas para este usuario.</div>
-      ) : (
-        <GenericTable
-          data={addresses}
-          actions={[
-            { name: "edit", label: "Editar" },
-            { name: "delete", label: "Eliminar" },
-          ]}
-          onAction={handleAction}
-        />
-      )}
+      <GenericTable
+        data={addresses}
+        actions={[
+          { name: "edit", label: "Editar" },
+          { name: "delete", label: "Eliminar" },
+        ]}
+        onAction={handleAction}
+      />
     </div>
   );
 };

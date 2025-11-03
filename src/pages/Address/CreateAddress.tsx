@@ -5,84 +5,79 @@ import Breadcrumb from "../../components/Breadcrumb";
 import GenericForm from "../../components/Form/GenericForm";
 import { addressService } from "../../services/addressService";
 
+/**
+ * Página para crear una nueva dirección asociada a un usuario.
+ * Usa el formulario genérico para mantener compatibilidad visual
+ * con las diferentes librerías (Bootstrap, Material UI, Tailwind, etc.).
+ */
 const CreateAddress: React.FC = () => {
   const [template, setTemplate] = useState<any | null>(null);
   const navigate = useNavigate();
-  const { userId } = useParams<{ userId: string }>(); // ID del usuario al que pertenece la dirección
+  const { userId } = useParams<{ userId: string }>();
 
+  // Crea una estructura base para el formulario
   useEffect(() => {
-    // Generar un template base dinámico (según la estructura del backend o un esquema mínimo)
-    (async () => {
-      try {
-        const data = await addressService.getAddresses();
-        if (Array.isArray(data) && data.length > 0) {
-          // Creamos un objeto vacío basado en el primer registro recibido
-          const base = Object.keys(data[0]).reduce((acc, key) => {
-            acc[key] = "";
-            return acc;
-          }, {} as any);
-
-          // Eliminamos campos no editables o automáticos
-          delete base.id;
-          delete base.created_at;
-          delete base.updated_at;
-          delete base.user_id;
-
-          setTemplate(base);
-        } else {
-          // Si no hay datos, usamos una estructura mínima esperada por el backend
-          setTemplate({
-            street: "",
-            number: "",
-            latitude: "",
-            longitude: "",
-          });
-        }
-      } catch (error) {
-        console.error("Error al generar template dinámico:", error);
-        setTemplate({
-          street: "",
-          number: "",
-          latitude: "",
-          longitude: "",
-        });
-      }
-    })();
+    setTemplate({
+      street: "",
+      number: "",
+      latitude: 0,
+      longitude: 0,
+    });
   }, []);
 
-  // Maneja la creación del registro
+  /**
+   * Envía la solicitud al backend para crear una dirección.
+   * Si el backend devuelve un 400 con el mensaje "User already has an address",
+   * se muestra la alerta y se redirige automáticamente a la lista.
+   */
   const handleCreate = async (values: any) => {
     try {
-      if (!userId) {
-        Swal.fire("Error", "No se encontró el ID del usuario.", "error");
+      if (!userId) throw new Error("No se encontró el ID del usuario.");
+
+      // Convertir los campos de coordenadas a número antes de enviar
+      const payload = {
+        ...values,
+        latitude: Number(values.latitude),
+        longitude: Number(values.longitude),
+      };
+
+      const created = await addressService.createAddress(Number(userId), payload);
+
+      if (created) {
+        await Swal.fire({
+          title: "Éxito",
+          text: "Dirección creada correctamente",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        navigate(`/addresses/list/${userId}`);
+      }
+    } catch (error: any) {
+      // Detectar error específico del backend
+      const backendError = error?.response?.data?.error;
+
+      if (backendError === "User already has an address") {
+        // Si el usuario ya tiene dirección, se informa y se redirige a la lista
+        await Swal.fire({
+          title: "Atención",
+          text: "Este usuario ya tiene una dirección registrada.",
+          icon: "info",
+          confirmButtonText: "Volver al listado",
+        });
+
+        navigate(`/addresses/list/${userId}`);
         return;
       }
 
-      // Convertimos los valores numéricos antes de enviar
-      const payload = {
-        ...values,
-        latitude: parseFloat(values.latitude),
-        longitude: parseFloat(values.longitude),
-      };
-
-      await addressService.createAddress(Number(userId), payload);
-
-      await Swal.fire({
-        title: "Éxito",
-        text: "Dirección creada correctamente",
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-
-      navigate(`/addresses/list/${userId}`);
-    } catch (error: any) {
-      console.error("Error creando dirección:", error);
+      // Otros errores genéricos
       const message =
         error?.response?.data?.message ||
         error?.response?.data?.detail ||
         error?.message ||
-        "No fue posible crear la dirección";
+        "No fue posible crear la dirección.";
+
       Swal.fire("Error", message, "error");
     }
   };
@@ -94,11 +89,6 @@ const CreateAddress: React.FC = () => {
       <Breadcrumb pageName="Crear Dirección" />
       <div className="p-6">
         <h2 className="text-xl font-semibold mb-4">Nueva Dirección</h2>
-
-        {/* 
-          GenericForm adapta su diseño a la librería activa (bootstrap, tailwind, etc.)
-          mode={1} => modo creación
-        */}
         <GenericForm mode={1} data={template} handleCreate={handleCreate} />
       </div>
     </div>

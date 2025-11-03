@@ -1,4 +1,4 @@
-// Address.ts
+// src/models/Address.ts
 import { User } from "./User";
 
 export class Address {
@@ -8,5 +8,9 @@ export class Address {
   latitude!: number;
   longitude!: number;
 
-  user?: User; // relación 1:1 bidireccional
+  // Campo clave foránea (según API)
+  userId!: number;
+
+  // Relación opcional con User (no siempre viene en la respuesta)
+  user?: User;
 }

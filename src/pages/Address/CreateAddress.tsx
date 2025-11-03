@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import Breadcrumb from "../../components/Breadcrumb";
 import GenericForm from "../../components/Form/GenericForm";
 import { addressService } from "../../services/addressService";
+import { Address } from "../../models/Address";
 
 /**
- * Página para crear una nueva dirección asociada a un usuario.
- * Usa el formulario genérico para mantener compatibilidad visual
- * con las diferentes librerías (Bootstrap, Material UI, Tailwind, etc.).
+ * Página: Crear dirección para un usuario
+ * - Un usuario solo puede tener una dirección
+ * - Si ya tiene una, muestra aviso y redirige al listado
  */
 const CreateAddress: React.FC = () => {
-  const [template, setTemplate] = useState<any | null>(null);
-  const navigate = useNavigate();
   const { userId } = useParams<{ userId: string }>();
+  const [template, setTemplate] = useState<Partial<Address> | null>(null);
+  const navigate = useNavigate();
 
-  // Crea una estructura base para el formulario
+  // Estructura base del formulario
   useEffect(() => {
     setTemplate({
       street: "",
@@ -25,64 +26,56 @@ const CreateAddress: React.FC = () => {
     });
   }, []);
 
-  /**
-   * Envía la solicitud al backend para crear una dirección.
-   * Si el backend devuelve un 400 con el mensaje "User already has an address",
-   * se muestra la alerta y se redirige automáticamente a la lista.
-   */
   const handleCreate = async (values: any) => {
     try {
-      if (!userId) throw new Error("No se encontró el ID del usuario.");
+      if (!userId) {
+        Swal.fire("Error", "No se encontró el usuario asociado.", "error");
+        return;
+      }
 
-      // Convertir los campos de coordenadas a número antes de enviar
       const payload = {
         ...values,
         latitude: Number(values.latitude),
         longitude: Number(values.longitude),
       };
 
-      const created = await addressService.createAddress(Number(userId), payload);
+      await addressService.createAddress(Number(userId), payload);
 
-      if (created) {
-        await Swal.fire({
-          title: "Éxito",
-          text: "Dirección creada correctamente",
-          icon: "success",
-          timer: 1500,
-          showConfirmButton: false,
-        });
+      await Swal.fire({
+        title: "Éxito",
+        text: "Dirección creada correctamente.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
 
-        navigate(`/addresses/list/${userId}`);
-      }
+      navigate(`/addresses/list/${userId}`);
     } catch (error: any) {
-      // Detectar error específico del backend
-      const backendError = error?.response?.data?.error;
+      console.error("Error creando dirección:", error);
 
-      if (backendError === "User already has an address") {
-        // Si el usuario ya tiene dirección, se informa y se redirige a la lista
+      const message =
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        error?.message ||
+        "No fue posible crear la dirección.";
+
+      // Si ya existe una dirección para el usuario
+      if (message.includes("User already has an address")) {
         await Swal.fire({
-          title: "Atención",
+          title: "Aviso",
           text: "Este usuario ya tiene una dirección registrada.",
           icon: "info",
           confirmButtonText: "Volver al listado",
         });
-
         navigate(`/addresses/list/${userId}`);
         return;
       }
-
-      // Otros errores genéricos
-      const message =
-        error?.response?.data?.message ||
-        error?.response?.data?.detail ||
-        error?.message ||
-        "No fue posible crear la dirección.";
 
       Swal.fire("Error", message, "error");
     }
   };
 
-  if (!template) return <div>Cargando...</div>;
+  if (!template) return <div>Cargando formulario...</div>;
 
   return (
     <div>

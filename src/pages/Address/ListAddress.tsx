@@ -6,6 +6,11 @@ import { addressService } from "../../services/addressService";
 import { Address } from "../../models/Address";
 import Breadcrumb from "../../components/Breadcrumb";
 
+/**
+ * Página: Listado de direcciones asociadas a un usuario
+ * - Muestra la dirección (si existe)
+ * - Permite eliminarla o crear una nueva
+ */
 const ListAddress: React.FC = () => {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const { userId } = useParams<{ userId: string }>();
@@ -24,7 +29,6 @@ const ListAddress: React.FC = () => {
       if (Array.isArray(response)) {
         setAddresses(response);
       } else if (response && typeof response === "object") {
-        // Si devuelve un solo objeto, lo convertimos a array
         setAddresses([response]);
       } else {
         setAddresses([]);
@@ -32,7 +36,7 @@ const ListAddress: React.FC = () => {
       }
     } catch (error: any) {
       if (error?.response?.status === 404) {
-        console.log(`El usuario ${userId} no tiene direcciones.`);
+        console.log(`El usuario ${userId} no tiene direcciones registradas.`);
         setAddresses([]);
       } else {
         console.error("Error al obtener direcciones:", error);
@@ -42,13 +46,8 @@ const ListAddress: React.FC = () => {
   };
 
   const handleAction = async (action: string, item: Address) => {
-    switch (action) {
-      case "edit":
-        navigate(`/addresses/update/${item.id}`);
-        break;
-      case "delete":
-        await deleteAddress(item);
-        break;
+    if (action === "delete") {
+      await deleteAddress(item);
     }
   };
 
@@ -68,7 +67,8 @@ const ListAddress: React.FC = () => {
       await addressService.deleteAddress(item.id);
       Swal.fire("Eliminado", "Dirección eliminada correctamente", "success");
       fetchData();
-    } catch (error: any) {
+    } catch (error) {
+      console.error("Error eliminando dirección:", error);
       Swal.fire("Error", "No fue posible eliminar la dirección.", "error");
     }
   };
@@ -97,10 +97,7 @@ const ListAddress: React.FC = () => {
 
       <GenericTable
         data={addresses}
-        actions={[
-          { name: "edit", label: "Editar" },
-          { name: "delete", label: "Eliminar" },
-        ]}
+        actions={[{ name: "delete", label: "Eliminar" }]}
         onAction={handleAction}
       />
     </div>

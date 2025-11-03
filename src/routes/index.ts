@@ -26,10 +26,13 @@ import ListUsers from "../pages/Users/ListUser";
 import CreateUser from "../pages/Users/CreateUser";
 import UpdateUser from "../pages/Users/UpdateUser";
 
-// Direcciones (Addresses)
+// Direcciones (
 import ListAddress from "../pages/Address/ListAddress";
 import CreateAddress from "../pages/Address/CreateAddress";
-import UpdateAddress from "../pages/Address/UpdateAddress";
+
+// Contraseñas
+import ListPassword from "../pages/Passwords/ListPassword";
+import CreatePassword from "../pages/Passwords/CreatePassword";
 
 const coreRoutes = [
   // ==== USERS ====
@@ -60,12 +63,17 @@ const coreRoutes = [
     title: "Create Address",
     component: CreateAddress,
   },
+  // ==== PASSWORDS ====
   {
-    path: "/addresses/update/:id",
-    title: "Update Address",
-    component: UpdateAddress,
+    path: "/passwords/list/:userId",
+    title: "List Passwords",
+    component: ListPassword,
   },
-
+  {
+    path: "/passwords/create/:userId",
+    title: "Create Password",
+    component: CreatePassword,
+  },
   // ==== ROLES ====
   {
     path: "/roles/list",

@@ -1,33 +1,35 @@
 import api from "../interceptors/axiosInterceptor";
+import { UserRole } from "../models/UserRole";
 
 class UserRoleService {
-  async getUserRoles(): Promise<any[]> {
-    const res = await api.get("/api/user-roles");
+  async getUserRoles(): Promise<UserRole[]> {
+    const res = await api.get("/api/user_roles");
     return res.data;
   }
 
-  async getRolesByUserId(userId: number): Promise<any[]> {
-    const res = await api.get(`/api/user-roles/user/${userId}`);
+  async getUserRoleById(id: string | number): Promise<UserRole> {
+    const res = await api.get(`/api/user_roles/${id}`);
     return res.data;
   }
 
-  async getUsersByRoleId(roleId: number): Promise<any[]> {
-    const res = await api.get(`/api/user-roles/role/${roleId}`);
+  async getUserRolesByUser(userId: number): Promise<UserRole[]> {
+    const res = await api.get(`/api/user_roles/user/${userId}`);
     return res.data;
   }
 
-  async createUserRole(userId: number, roleId: number): Promise<any> {
-    const res = await api.post(`/api/user-roles/user/${userId}/role/${roleId}`, {
-      startAt: new Date().toISOString(),
-      endAt: null,
-    });
+  async createUserRole(payload: Partial<UserRole>): Promise<UserRole> {
+    const res = await api.post("/api/user_roles", payload);
     return res.data;
   }
 
-  async deleteUserRole(userRoleId: string): Promise<void> {
-    await api.delete(`/api/user-roles/${userRoleId}`);
+  async updateUserRole(id: string | number, payload: Partial<UserRole>): Promise<UserRole> {
+    const res = await api.put(`/api/user_roles/${id}`, payload);
+    return res.data;
+  }
+
+  async deleteUserRole(id: string | number): Promise<void> {
+    await api.delete(`/api/user_roles/${id}`);
   }
 }
 
-// 👇 ESTA LÍNEA ES LA IMPORTANTE
 export const userRoleService = new UserRoleService();

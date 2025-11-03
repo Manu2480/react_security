@@ -1,35 +1,20 @@
-import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import Breadcrumb from "../../components/Breadcrumb";
 import GenericForm from "../../components/Form/GenericForm";
+import { Role } from "../../models/Role";
 import { roleService } from "../../services/roleService";
 
 const CreateRole: React.FC = () => {
-  const [template, setTemplate] = useState<any | null>(null);
   const navigate = useNavigate();
+  const [template, setTemplate] = useState<Partial<Role> | null>(null);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await roleService.getRoles();
-        if (Array.isArray(data) && data.length > 0) {
-          const base = Object.keys(data[0]).reduce((acc, key) => {
-            acc[key] = "";
-            return acc;
-          }, {} as any);
-          delete base.id;
-          delete base.created_at;
-          delete base.updated_at;
-          setTemplate(base);
-        } else {
-          setTemplate({ name: "", description: "" });
-        }
-      } catch (error) {
-        console.error("Error generando template de roles:", error);
-        setTemplate({ name: "", description: "" });
-      }
-    })();
+    setTemplate({
+      name: "",
+      description: "",
+    });
   }, []);
 
   const handleCreate = async (values: any) => {
@@ -43,21 +28,19 @@ const CreateRole: React.FC = () => {
         showConfirmButton: false,
       });
       navigate("/roles/list");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creando rol:", error);
-      Swal.fire("Error", "No fue posible crear el rol", "error");
+      Swal.fire("Error", "No fue posible crear el rol.", "error");
     }
   };
 
-  if (!template) return <div>Cargando...</div>;
+  if (!template) return <div>Cargando formulario...</div>;
 
   return (
-    <div>
+    <div className="p-4">
       <Breadcrumb pageName="Crear Rol" />
-      <div className="p-6">
-        <h2 className="text-xl font-semibold mb-4">Nuevo Rol</h2>
-        <GenericForm mode={1} data={template} handleCreate={handleCreate} />
-      </div>
+      <h2 className="text-xl font-semibold mb-4">Nuevo Rol</h2>
+      <GenericForm mode={1} data={template} handleCreate={handleCreate} />
     </div>
   );
 };

@@ -1,122 +1,102 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+import Breadcrumb from "../../components/Breadcrumb";
 import GenericTable from "../../components/Table/GenericTable";
+import { Role } from "../../models/Role";
 import { roleService } from "../../services/roleService";
-import { useLibreria } from "../../context/LibreriaContext";
 
-const ListRoles: React.FC = () => {
-  const [roles, setRoles] = useState<any[]>([]);
+const ListRole: React.FC = () => {
+  const [roles, setRoles] = useState<Role[]>([]);
   const navigate = useNavigate();
-  const { libreria } = useLibreria();
-  const didFetch = useRef(false);
 
   useEffect(() => {
-    if (didFetch.current) return;
-    didFetch.current = true;
-    fetchData();
+    fetchRoles();
   }, []);
 
-  const fetchData = async () => {
+  const fetchRoles = async () => {
     try {
-      const data = await roleService.getRoles();
-      console.log("📦 Roles obtenidos desde API:", data);
-      setRoles(Array.isArray(data) ? data : []);
+      const res = await roleService.getRoles();
+      setRoles(res);
     } catch (error) {
-      console.error("Error fetching roles:", error);
-      Swal.fire("Error", "No fue posible obtener los roles", "error");
+      console.error("Error al obtener roles:", error);
+      Swal.fire("Error", "No fue posible cargar los roles.", "error");
     }
   };
 
-  const handleAction = async (action: string, item: any) => {
-    if (action === "edit") navigate(`/roles/update/${item.id}`);
-    else if (action === "delete") await deleteRole(item);
+  const handleAction = async (action: string, item: Role) => {
+    switch (action) {
+      case "edit":
+        navigate(`/roles/update/${item.id}`);
+        break;
+      case "delete":
+        await deleteRole(item);
+        break;
+    }
   };
 
-  const deleteRole = async (item: any) => {
-    const confirm = await Swal.fire({
-      title: "¿Eliminar rol?",
-      text: "Esta acción no se puede deshacer.",
+  const deleteRole = async (item: Role) => {
+    const result = await Swal.fire({
+      title: "Eliminar Rol",
+      text: `¿Seguro que deseas eliminar el rol "${item.name}"?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "No",
+      cancelButtonText: "Cancelar",
     });
 
-    if (!confirm.isConfirmed) return;
+    if (!result.isConfirmed) return;
 
     try {
       await roleService.deleteRole(item.id);
-      await Swal.fire("Eliminado", "El rol ha sido eliminado", "success");
-      fetchData();
+      Swal.fire("Eliminado", "El rol fue eliminado correctamente", "success");
+      fetchRoles();
     } catch (error) {
-      console.error("Error eliminando rol:", error);
-      Swal.fire("Error", "No fue posible eliminar el rol", "error");
+      Swal.fire("Error", "No fue posible eliminar el rol.", "error");
     }
   };
 
-  const renderBotonCrear = () => {
-    const onCrear = () => navigate("/roles/create");
+  // Botón para crear un nuevo rol
+  const renderBotonCrear = () => (
+    <button
+      onClick={() => navigate("/roles/create")}
+      className="bg-primary text-white rounded-md px-4 py-2 hover:bg-opacity-90"
+    >
+      + Crear Rol
+    </button>
+  );
 
-    if (libreria === "bootstrap") {
-      return (
-        <button type="button" className="btn btn-primary" onClick={onCrear}>
-          + Crear Rol
-        </button>
-      );
-    }
-
-    if (libreria === "ui") {
-      return (
-        <button
-          type="button"
-          onClick={onCrear}
-          style={{
-            backgroundColor: "#1976d2",
-            color: "white",
-            padding: "10px 18px",
-            borderRadius: 8,
-            border: "none",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          + Crear Rol
-        </button>
-      );
-    }
-
-    return (
-      <button
-        type="button"
-        onClick={onCrear}
-        className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-3 px-6 text-white hover:bg-opacity-90"
-      >
-        + Crear Rol
-      </button>
-    );
-  };
+  // Botón para asignar rol (mismo estilo que crear)
+  const renderBotonAsignar = () => (
+    <button
+      onClick={() => navigate("/userroles/list")}
+      className="bg-primary text-white rounded-md px-4 py-2 hover:bg-opacity-90"
+    >
+      + Asignar Rol
+    </button>
+  );
 
   return (
-    <div className="flex flex-col gap-10">
-      <div className="rounded-sm border border-stroke bg-white shadow-default p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="text-xl font-semibold text-black dark:text-white">Listado de Roles</h4>
+    <div className="p-4">
+      <Breadcrumb pageName="Roles" />
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Gestión de Roles</h2>
+        <div className="flex gap-2">
           {renderBotonCrear()}
+          {renderBotonAsignar()}
         </div>
-
-        <GenericTable
-          data={roles}
-          columns={roles.length ? Object.keys(roles[0]) : ["id", "name"]}
-          actions={[
-            { name: "edit", label: "Editar" },
-            { name: "delete", label: "Eliminar" },
-          ]}
-          onAction={handleAction}
-        />
       </div>
+
+      <GenericTable
+        data={roles}
+        actions={[
+          { name: "edit", label: "Editar" },
+          { name: "delete", label: "Eliminar" },
+        ]}
+        onAction={handleAction}
+      />
     </div>
   );
 };
 
-export default ListRoles;
+export default ListRole;

@@ -1,10 +1,6 @@
-// src/services/addressService.ts
 import api from "../interceptors/axiosInterceptor";
-import { Address } from "../models/Address";
+import { Address } from "../models/Address"; // ✅ el modelo viene de models, no se define aquí
 
-/**
- * Servicio para la gestión de direcciones (1:1 con User)
- */
 class AddressService {
   async getAddresses(): Promise<Address[]> {
     const res = await api.get("/api/addresses");
@@ -17,12 +13,12 @@ class AddressService {
   }
 
   async getAddressesByUser(userId: number): Promise<Address[]> {
-    const res = await api.get(`/api/users/${userId}/addresses`);
+    const res = await api.get(`/api/addresses/user/${userId}`);
     return res.data;
   }
 
   async createAddress(userId: number, payload: Partial<Address>): Promise<Address> {
-    const res = await api.post(`/api/users/${userId}/addresses`, payload);
+    const res = await api.post(`/api/addresses/user/${userId}`, payload);
     return res.data;
   }
 

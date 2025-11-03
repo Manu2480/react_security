@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import GenericTable from "../../components/Table/GenericTable";
-import { userService } from "../../services/userService";
+import { addressService } from "../../services/addressService";
 import { useLibreria } from "../../context/LibreriaContext";
+import Breadcrumb from "../../components/Breadcrumb";
 
-const ListUsers: React.FC = () => {
-  const [users, setUsers] = useState<any[]>([]);
+const ListAddress: React.FC = () => {
+  const [addresses, setAddresses] = useState<any[]>([]);
   const navigate = useNavigate();
+  const { userId } = useParams(); // El ID del usuario viene desde la URL
   const { libreria } = useLibreria();
   const didFetch = useRef(false);
 
@@ -19,25 +21,23 @@ const ListUsers: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const data = await userService.getUsers();
-      console.log("📦 Usuarios obtenidos desde API:", data);
-      setUsers(Array.isArray(data) ? data : []);
+      const data = await addressService.getAddressesByUser(Number(userId));
+      setAddresses(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching users:", error);
-      Swal.fire("Error", "No fue posible obtener usuarios.", "error");
+      console.error("Error al obtener direcciones:", error);
+      Swal.fire("Error", "No fue posible obtener direcciones.", "error");
     }
   };
 
   const handleAction = async (action: string, item: any) => {
-    if (action === "edit") navigate(`/users/update/${item.id}`);
-    if (action === "delete") await deleteUser(item);
-    if (action === "profile") navigate(`./profile/profile${item.id}`);
+    if (action === "edit") navigate(`/address/update/${item.id}`);
+    if (action === "delete") await deleteAddress(item);
   };
 
-  const deleteUser = async (item: any) => {
+  const deleteAddress = async (item: any) => {
     const result = await Swal.fire({
       title: "Eliminación",
-      text: "¿Está seguro de querer eliminar el registro?",
+      text: "¿Está seguro de eliminar esta dirección?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, eliminar",
@@ -47,21 +47,21 @@ const ListUsers: React.FC = () => {
     if (!result.isConfirmed) return;
 
     try {
-      await userService.deleteUser(item.id);
-      Swal.fire("Eliminado", "Usuario eliminado correctamente", "success");
+      await addressService.deleteAddress(item.id);
+      Swal.fire("Eliminado", "Dirección eliminada correctamente", "success");
       fetchData();
-    } catch (error: any) {
-      Swal.fire("Error", "No fue posible eliminar el usuario.", "error");
+    } catch (error) {
+      Swal.fire("Error", "No fue posible eliminar la dirección.", "error");
     }
   };
 
   const renderBotonCrear = () => {
-    const onCrear = () => navigate("/users/create");
+    const onCrear = () => navigate(`/address/create/${userId}`);
 
     if (libreria === "bootstrap") {
       return (
         <button className="btn btn-primary" onClick={onCrear}>
-          + Crear Usuario
+          + Crear Dirección
         </button>
       );
     }
@@ -77,7 +77,7 @@ const ListUsers: React.FC = () => {
             border: "none",
           }}
         >
-          + Crear Usuario
+          + Crear Dirección
         </button>
       );
     }
@@ -86,20 +86,22 @@ const ListUsers: React.FC = () => {
         onClick={onCrear}
         className="bg-primary text-white rounded-md px-4 py-2 hover:bg-opacity-90"
       >
-        + Crear Usuario
+        + Crear Dirección
       </button>
     );
   };
 
   return (
     <div className="p-4">
+      <Breadcrumb pageName="Direcciones del Usuario" />
+
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Listado de Usuarios</h2>
+        <h2 className="text-xl font-semibold">Listado de Direcciones</h2>
         {renderBotonCrear()}
       </div>
 
       <GenericTable
-        data={users}
+        data={addresses}
         actions={[
           { name: "edit", label: "Editar" },
           { name: "delete", label: "Eliminar" },
@@ -110,4 +112,4 @@ const ListUsers: React.FC = () => {
   );
 };
 
-export default ListUsers;
+export default ListAddress;

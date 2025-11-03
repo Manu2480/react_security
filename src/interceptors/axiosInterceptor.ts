@@ -11,7 +11,7 @@ import SecurityService from "../services/securityService";
  */
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // ejemplo: http://localhost:5000
+  baseURL: import.meta.env.VITE_API_URL, 
   headers: {
     "Content-Type": "application/json",
   },

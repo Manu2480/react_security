@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 
-import ECommerce from './pages/Dashboard/ECommerce';
+import ListUsers from './pages/Users/ListUser';
 import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
 import Loader from './common/Loader';
@@ -33,7 +33,7 @@ function App() {
         <Route path="/auth/signup" element={<SignUp />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
-            <Route index element={<ECommerce />} />
+            <Route index element={<ListUsers />} />
             {routes.map((routes, index) => {
               const { path, component: Component } = routes;
               return (

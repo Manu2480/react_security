@@ -12,15 +12,20 @@ const CreatePermission: React.FC = () => {
   // Cargar estructura inicial del permiso
   useEffect(() => {
     setTemplate({
-      url: "",
-      method: "",
-      option: "",
+      url: "/",
+      method: "GET",  // Valor por defecto válido
     });
   }, []);
 
   const handleCreate = async (values: any) => {
     try {
-      console.log("Creando permiso:", values);
+      console.log("Creando permiso:", JSON.stringify(values, null, 2));
+      
+      // Validación local
+      if (!values.url || !values.method) {
+        throw new Error("La URL y el método son requeridos");
+      }
+      
       await permissionService.createPermission(values);
       await Swal.fire({
         title: "Permiso creado",

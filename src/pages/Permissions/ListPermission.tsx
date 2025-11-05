@@ -137,7 +137,7 @@ const ListPermissions: React.FC = () => {
 
         <GenericTable
           data={permissions}
-          columns={["id", "url", "method", "option"]}
+          columns={["id", "url", "method"]}
           actions={[
             { name: "edit", label: "Update" },
             { name: "delete", label: "Delete" },

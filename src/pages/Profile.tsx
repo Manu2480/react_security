@@ -3,6 +3,17 @@ import CoverOne from '../images/cover/cover-01.png';
 import userSix from '../images/user/user-06.png';
 
 const Profile = () => {
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/profile'); // Actualiza con la ruta correcta del backend
+      if (!response.ok) throw new Error('Error al cargar el perfil');
+      // ...existing code...
+    } catch (error) {
+      console.error(error);
+      // Manejo de errores
+    }
+  };
+
   return (
     <>
       <Breadcrumb pageName="Profile" />

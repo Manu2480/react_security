@@ -34,22 +34,35 @@ class SecurityService extends EventTarget {
     }
   }
 
-  // -------------------------------------------------------------
-  // Inicia sesión con Google (OAuth).
-  // Recibe un idToken de Firebase y lo envía al backend.
+  /**
+   * Login con Google (OAuth)
+   * Envía el idToken de Firebase al backend /login/google
+   */
   async loginWithGoogle(idToken: string) {
+    // Login OAuth Google: POST /login/google
     return await this._loginWithOAuth(idToken, "google");
   }
 
   // Inicia sesión con GitHub (OAuth).
   async loginWithGitHub(idToken: string) {
+    // Login OAuth GitHub: POST /login/github
     return await this._loginWithOAuth(idToken, "github");
+  }
+
+  /**
+   * Login con Microsoft (OAuth)
+   * Envía el idToken de Firebase al backend /login/microsoft
+   */
+  async loginWithMicrosoft(idToken: string) {
+    // Login OAuth Microsoft: POST /login/microsoft
+    return await this._loginWithOAuth(idToken, "microsoft");
   }
 
   // -------------------------------------------------------------
   // Función privada usada por loginWithGoogle y loginWithGitHub.
   // Envía el idToken al backend para validar la sesión.
   private async _loginWithOAuth(idToken: string, provider: string) {
+    // Método común para /login/{provider}
     try {
       console.log(`Enviando ID token de ${provider} al backend...`);
 

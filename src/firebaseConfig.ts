@@ -40,16 +40,10 @@ const app = initializeApp(firebaseConfig);
 // -----------------------------------------------------------------------------
 const auth = getAuth(app);
 
-// -----------------------------------------------------------------------------
-// Creamos los proveedores de autenticación
-// Cada proveedor permite iniciar sesión con una plataforma distinta.
-// -----------------------------------------------------------------------------
-const googleProvider = new GoogleAuthProvider();     // Login con Google
-const githubProvider = new GithubAuthProvider();     // Login con GitHub
-const microsoftProvider = new OAuthProvider("microsoft.com"); // Login con Microsoft
+// Creamos los proveedores que vamos a usar (Google, GitHub, Microsoft)
+const googleProvider = new GoogleAuthProvider();
+const githubProvider = new GithubAuthProvider();
+const microsoftProvider = new OAuthProvider("microsoft.com");
 
-// -----------------------------------------------------------------------------
-// Exportamos todo lo necesario
-// Así podemos importar `auth` y los proveedores desde el contexto de autenticación.
-// -----------------------------------------------------------------------------
+// Exportamos para poder usarlos en otros archivos (AuthContext)
 export { auth, googleProvider, githubProvider, microsoftProvider };

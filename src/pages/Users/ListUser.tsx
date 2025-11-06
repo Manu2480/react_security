@@ -1,14 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
+import ProfileModal from "../Profile/ProfileModal";
+import SessionsModal from "./SessionsModal";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import GenericTable from "../../components/Table/GenericTable";
 import { userService } from "../../services/userService";
-import { useLibreria } from "../../context/LibreriaContext";
+// import { useLibreria } from "../../context/LibreriaContext"; // not needed here
 
 const ListUsers: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
   const navigate = useNavigate();
-  const { libreria } = useLibreria();
+  // libreria no es necesario aquí; GenericTable elige renderer según contexto
+  const [selectedUser, setSelectedUser] = useState<{ id: number; name?: string } | null>(null);
+  const [selectedSessionsUser, setSelectedSessionsUser] = useState<{ id: number; name?: string } | null>(null);
   const didFetch = useRef(false);
 
   // Cargar usuarios solo una vez
@@ -35,6 +39,8 @@ const ListUsers: React.FC = () => {
     if (action === "delete") await deleteUser(item);
     if (action === "address") navigate(`/addresses/list/${item.id}`);
     if (action === "password") navigate(`/passwords/list/${item.id}`);
+    if (action === "profile") setSelectedUser({ id: item.id, name: item.name });
+    if (action === "sessions") setSelectedSessionsUser({ id: item.id, name: item.name });
   };
 
   const deleteUser = async (item: any) => {
@@ -65,9 +71,9 @@ const ListUsers: React.FC = () => {
     return (
       <button
         onClick={onCrear}
-        className="bg-primary text-white rounded-md px-4 py-2 hover:bg-opacity-90"
+        className="![background-color:rgb(79,70,229)] ![color:white] !rounded-md !px-4 !py-2 ![box-shadow:0_1px_3px_0_rgba(0,0,0,0.1),0_1px_2px_0_rgba(0,0,0,0.06)] hover:![background-color:rgb(67,56,202)] active:![background-color:rgb(55,48,163)] !font-medium !transition-all !duration-150 hover:![transform:translateY(-1px)] active:![transform:translateY(0)] focus:!outline-none focus:![box-shadow:0_0_0_2px_rgba(99,102,241,0.25)]"
       >
-        + Crear Usuario
+        <span className="![display:inline-flex] ![align-items:center] ![gap:0.5rem] ![color:white]">+ Crear Usuario</span>
       </button>
     );
   };
@@ -86,9 +92,30 @@ const ListUsers: React.FC = () => {
           { name: "delete", label: "Eliminar" },
           { name: "address", label: "Direcciones" },
           { name: "password", label: "Contraseñas" },
+          { name: "profile", label: "Perfil" },
+          { name: "sessions", label: "Sesiones" },
         ]}
         onAction={handleAction}
       />
+
+      {/* Profile modal state and component */}
+      {selectedUser && (
+        <ProfileModal
+          userId={selectedUser.id}
+          userName={selectedUser.name}
+          onClose={() => setSelectedUser(null)}
+          onSaved={() => fetchData()}
+        />
+      )}
+
+      {selectedSessionsUser && (
+        <SessionsModal
+          userId={selectedSessionsUser.id}
+          userName={selectedSessionsUser.name}
+          onClose={() => setSelectedSessionsUser(null)}
+          onChanged={() => fetchData()}
+        />
+      )}
     </div>
   );
 };

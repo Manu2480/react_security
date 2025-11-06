@@ -9,12 +9,12 @@ export interface Permission {
 
 class PermissionService {
   async getPermissions(): Promise<Permission[]> {
-    const res = await api.get("api/permissions");
+    const res = await api.get("/api/permissions");
     return res.data;
   }
 
   async getPermissionById(id: number): Promise<Permission> {
-    const res = await api.get(`api/permissions/${id}`);
+    const res = await api.get(`/api/permissions/${id}`);
     return res.data;
   }
 
@@ -43,7 +43,7 @@ async createPermission(payload: any): Promise<any> {
 
   console.log("➡️ Enviando permiso al backend:", JSON.stringify(mappedPayload, null, 2));
 
-  const res = await api.post("api/permissions/", mappedPayload, {
+  const res = await api.post("/api/permissions/", mappedPayload, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -57,12 +57,12 @@ async createPermission(payload: any): Promise<any> {
 
 
   async updatePermission(id: number, payload: Permission): Promise<Permission> {
-    const res = await api.put(`api/permissions/${id}`, payload);
+    const res = await api.put(`/api/permissions/${id}`, payload);
     return res.data;
   }
 
   async deletePermission(id: number): Promise<boolean> {
-    const res = await api.delete(`api/permissions/${id}`);
+    const res = await api.delete(`/api/permissions/${id}`);
     return res.status === 200 || res.status === 204;
   }
 }

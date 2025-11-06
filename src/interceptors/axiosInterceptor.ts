@@ -11,8 +11,12 @@ import SecurityService from "../services/securityService";
  *  - Manejar errores 401 globalmente
  */
 
+// In development we prefer a relative baseURL so the Vite dev-server proxy (/api -> backend)
+// can forward requests and avoid CORS issues. In production use the configured VITE_API_URL.
+const base = import.meta.env.MODE === 'development' ? '' : import.meta.env.VITE_API_URL;
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, 
+  baseURL: base,
   headers: {
     "Content-Type": "application/json",
   },

@@ -107,20 +107,18 @@ const ListPermissions: React.FC = () => {
       <button
         type="button"
         onClick={onCrear}
-        className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-3 px-6 text-center font-medium text-white hover:bg-opacity-90"
+        className="![background-color:rgb(79,70,229)] ![color:white] !rounded-md !px-4 !py-2 ![box-shadow:0_1px_3px_0_rgba(0,0,0,0.1),0_1px_2px_0_rgba(0,0,0,0.06)] hover:![background-color:rgb(67,56,202)] active:![background-color:rgb(55,48,163)] !font-medium !transition-all !duration-150 hover:![transform:translateY(-1px)] active:![transform:translateY(0)] focus:!outline-none focus:![box-shadow:0_0_0_2px_rgba(99,102,241,0.25)]"
       >
-        <svg
-          className="fill-current"
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M10.0001 0.5625C4.7876 0.5625 0.562622 4.7875 0.562622 10C0.562622 15.2125 4.7876 19.4375 10.0001 19.4375C15.2126 19.4375 19.4376 15.2125 19.4376 10C19.4376 4.7875 15.2126 0.5625 10.0001 0.5625ZM10.0001 18.0625C5.55012 18.0625 1.93762 14.45 1.93762 10C1.93762 5.55 5.55012 1.9375 10.0001 1.9375C14.4501 1.9375 18.0626 5.55 18.0626 10C18.0626 14.45 14.4501 18.0625 10.0001 18.0625Z" />
-          <path d="M13.7501 9.3125H10.6876V6.25C10.6876 5.86875 10.3813 5.5625 10.0001 5.5625C9.61887 5.5625 9.31262 5.86875 9.31262 6.25V9.3125H6.25012C5.86887 9.3125 5.56262 9.61875 5.56262 10C5.56262 10.3813 5.86887 10.6875 6.25012 10.6875H9.31262V13.75C9.31262 14.1313 9.61887 14.4375 10.0001 14.4375C10.3813 14.4375 10.6876 14.1313 10.6876 13.75V10.6875H13.7501C14.1313 10.6875 14.4376 10.3813 14.4376 10C14.4376 9.61875 14.1313 9.3125 13.7501 9.3125Z" />
-        </svg>
-        Crear Permiso
+        <span className="![display:inline-flex] ![align-items:center] ![gap:0.5rem] ![color:white]">
+          <svg
+            className="![width:20px] ![height:20px] ![fill:white]"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm5 11h-4v4H9v-4H5V9h4V5h2v4h4v2z"/>
+          </svg>
+          Crear Permiso
+        </span>
       </button>
     );
   };

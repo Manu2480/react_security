@@ -97,6 +97,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // 🌐 Login con Google
   const loginWithGoogle = async () => {
+    // Login OAuth Google → luego SecurityService.setToken/setUserLocal
     const result = await signInWithPopup(auth, googleProvider);
     const idToken = await result.user.getIdToken();
 
@@ -117,6 +118,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // 🐙 Login con GitHub
   const loginWithGitHub = async () => {
+    // Login OAuth GitHub → procesa idToken
     const result = await signInWithPopup(auth, githubProvider);
     const idToken = await result.user.getIdToken();
 
@@ -137,6 +139,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // 🪟 Login con Microsoft
   const loginWithMicrosoft = async () => {
+    // Login OAuth Microsoft → usa microsoftProvider (firebaseConfig)
+    // Backend posteriormente valida vía SecurityService._loginWithOAuth("/login/microsoft")
     try {
       const result = await signInWithPopup(auth, microsoftProvider);
       const idToken = await result.user.getIdToken();

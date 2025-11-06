@@ -31,7 +31,7 @@ const auth = getAuth(app);
 // Creamos los proveedores que vamos a usar (Google, GitHub, Microsoft)
 const googleProvider = new GoogleAuthProvider();
 const githubProvider = new GithubAuthProvider();
-const microsoftProvider = new OAuthProvider("microsoft.com");
+const microsoftProvider = new OAuthProvider("microsoft.com"); // ← Proveedor Microsoft usado en AuthContext
 
 // Exportamos para poder usarlos en otros archivos (AuthContext)
 export { auth, googleProvider, githubProvider, microsoftProvider };

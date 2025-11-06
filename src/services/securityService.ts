@@ -31,6 +31,7 @@ class SecurityService extends EventTarget {
    * 🔹 Login clásico (usuario y contraseña)
    */
   async login(payload: { email?: string; password?: string }) {
+    // Login clásico: POST /login
     const res = await api.post("/login", payload, {
       headers: { "Content-Type": "application/json" },
     });
@@ -49,6 +50,7 @@ class SecurityService extends EventTarget {
    * Envía el idToken de Firebase al backend /login/google
    */
   async loginWithGoogle(idToken: string) {
+    // Login OAuth Google: POST /login/google
     return await this._loginWithOAuth(idToken, "google");
   }
 
@@ -57,13 +59,24 @@ class SecurityService extends EventTarget {
    * Envía el idToken de Firebase al backend /login/github
    */
   async loginWithGitHub(idToken: string) {
+    // Login OAuth GitHub: POST /login/github
     return await this._loginWithOAuth(idToken, "github");
+  }
+
+  /**
+   * 🔹 Login con Microsoft (OAuth)
+   * Envía el idToken de Firebase al backend /login/microsoft
+   */
+  async loginWithMicrosoft(idToken: string) {
+    // Login OAuth Microsoft: POST /login/microsoft
+    return await this._loginWithOAuth(idToken, "microsoft");
   }
 
   /**
    * 🔸 Función privada reutilizada para ambos proveedores OAuth
    */
   private async _loginWithOAuth(idToken: string, provider: string) {
+    // Método común para /login/{provider}
     try {
       console.log(`📡 Enviando ID token de ${provider} al backend...`);
       const response = await api.post(`/login/${provider}`, { idToken });

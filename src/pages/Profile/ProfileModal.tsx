@@ -15,6 +15,7 @@ const ProfileModal: React.FC<Props> = ({ userId, userName, onClose, onSaved }) =
   const [identification, setIdentification] = useState("");
   const [phone, setPhone] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -33,6 +34,40 @@ const ProfileModal: React.FC<Props> = ({ userId, userName, onClose, onSaved }) =
     };
     load();
   }, [userId]);
+
+  // Cuando cambie el profile, resolver la URL de la foto consultando el backend
+  useEffect(() => {
+    const resolvePhoto = async () => {
+      if (!profile?.photo) {
+        setPhotoUrl(null);
+        return;
+      }
+      const raw = String(profile.photo);
+      // Si ya es URL absoluta, usarla directamente
+      if (/^https?:\/\//i.test(raw)) {
+        setPhotoUrl(raw);
+        return;
+      }
+      // Construir la URL esperada en el backend
+      const parts = raw.split("/");
+      const filename = parts.length ? parts[parts.length - 1] : raw;
+      const base = import.meta.env.VITE_API_URL || "";
+      const candidate = `${base}/api/profiles/${encodeURIComponent(filename)}`;
+      // Intentar verificar con HEAD que la ruta existe en backend
+      try {
+        const resp = await fetch(candidate, { method: "HEAD" });
+        if (resp.ok) {
+          setPhotoUrl(candidate);
+          return;
+        }
+      } catch (e) {
+        // ignore, fallback below
+      }
+      // Fallback: usar la ruta construida aunque la verificación falló
+      setPhotoUrl(candidate);
+    };
+    resolvePhoto();
+  }, [profile]);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) setPhotoFile(e.target.files[0]);
@@ -91,14 +126,9 @@ const ProfileModal: React.FC<Props> = ({ userId, userName, onClose, onSaved }) =
             <div>
               <label className="block text-sm font-medium">Foto</label>
               <input type="file" accept="image/*" onChange={handleFile} />
-              {profile?.photo && (
+              {photoUrl && (
                 <div className="mt-2">
-                  {(() => {
-                    const parts = String(profile.photo).split("/");
-                    const filename = parts.length ? parts[parts.length - 1] : profile.photo;
-                    const url = `${import.meta.env.VITE_API_URL}/api/profiles/${filename}`;
-                    return <img src={url} alt="profile" className="h-24 w-24 object-cover rounded" />;
-                  })()}
+                  <img src={photoUrl} alt="profile" className="h-24 w-24 object-cover rounded" />
                 </div>
               )}
             </div>

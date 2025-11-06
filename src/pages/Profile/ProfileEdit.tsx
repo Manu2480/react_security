@@ -6,6 +6,7 @@ interface ProfileForm {
   email: string;
   phone: string;
   photo: File | null;
+  bio: string; // Nueva propiedad para la biografía
 }
 
 const ProfileEdit: React.FC = () => {
@@ -14,6 +15,7 @@ const ProfileEdit: React.FC = () => {
     email: "",
     phone: "",
     photo: null,
+    bio: "",
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -32,9 +34,10 @@ const ProfileEdit: React.FC = () => {
     dataToSend.append("email", formData.email);
     dataToSend.append("phone", formData.phone);
     if (formData.photo) dataToSend.append("photo", formData.photo);
+    dataToSend.append("bio", formData.bio);
 
     // Ejemplo: actualización de perfil
-    fetch("http://localhost:8080/api/profile", {
+    fetch("http://localhost:5000/api/profile", {
       method: "PUT",
       body: dataToSend,
     })
@@ -87,6 +90,17 @@ const ProfileEdit: React.FC = () => {
           <div>
             <label className="block font-medium">Photo</label>
             <input type="file" name="photo" onChange={handleChange} />
+          </div>
+
+          <div>
+            <label className="block font-medium">Bio</label>
+            <input
+              type="text"
+              name="bio"
+              value={formData.bio}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+            />
           </div>
 
           <button

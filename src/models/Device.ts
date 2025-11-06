@@ -1,11 +1,9 @@
-// Device.ts
-import { User } from "./User";
-
-export class Device {
-  id!: number;
-  name!: string;
-  ip!: string;
-  operating_system!: string;
-
-  user?: User;
+export interface Device {
+  id: number;
+  user_id: number;
+  name: string;
+  ip: string;
+  operating_system?: string;
+  created_at?: string;
+  updated_at?: string;
 }

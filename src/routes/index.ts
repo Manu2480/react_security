@@ -39,6 +39,26 @@ import ListPermissions from "../pages/Permissions/ListPermission";
 import CreatePermission from "../pages/Permissions/CreatePermission";
 import UpdatePermission from "../pages/Permissions/UpdatePermission";
 
+// ==== DIGITAL SIGNATURES ====
+import ListDigitalSignature from "../pages/DigitalSignature/ListDigitalSignature";
+import CreateDigitalSignature from "../pages/DigitalSignature/CreateDigitalSignature";
+import UpdateDigitalSignature from "../pages/DigitalSignature/UpdateDigitalSignature";
+
+// ==== DEVICES ====
+import ListDevice from "../pages/Device/ListDevice";
+import CreateDevice from "../pages/Device/CreateDevice";
+import UpdateDevice from "../pages/Device/UpdateDevice";
+
+// ==== SECURITY QUESTIONS ====
+import ListSecurityQuestion from "../pages/SecurityQuestion/ListSecurityQuestion";
+import CreateSecurityQuestion from "../pages/SecurityQuestion/CreateSecurityQuestion";
+import UpdateSecurityQuestion from "../pages/SecurityQuestion/UpdateSecurityQuestion";
+
+// ==== ANSWERS ====
+import ListAnswer from "../pages/Answer/ListAnswer";
+import CreateAnswer from "../pages/Answer/CreateAnswer";
+import UpdateAnswer from "../pages/Answer/UpdateAnswer";
+
 // ==== RUTAS ====
 const coreRoutes = [
   // ==== USERS ====
@@ -78,6 +98,26 @@ const coreRoutes = [
   { path: "/chart", title: "Chart", component: Chart },
   { path: "/ui/alerts", title: "Alerts", component: Alerts },
   { path: "/ui/buttons", title: "Buttons", component: Buttons },
+
+  // ==== DIGITAL SIGNATURES ====
+  { path: "/digitalsignatures/list", title: "List Digital Signatures", component: ListDigitalSignature },
+  { path: "/digitalsignatures/create", title: "Create Digital Signature", component: CreateDigitalSignature },
+  { path: "/digitalsignatures/update/:id", title: "Update Digital Signature", component: UpdateDigitalSignature },
+
+  // ==== DEVICES ====
+  { path: "/devices/list", title: "List Devices", component: ListDevice },
+  { path: "/devices/create", title: "Create Device", component: CreateDevice },
+  { path: "/devices/update/:id", title: "Update Device", component: UpdateDevice },
+
+  // ==== SECURITY QUESTIONS ====
+  { path: "/securityquestions/list", title: "List Security Questions", component: ListSecurityQuestion },
+  { path: "/securityquestions/create", title: "Create Security Question", component: CreateSecurityQuestion },
+  { path: "/securityquestions/update/:id", title: "Update Security Question", component: UpdateSecurityQuestion },
+
+  // ==== ANSWERS ====
+  { path: "/answers/list", title: "List Answers", component: ListAnswer },
+  { path: "/answers/create", title: "Create Answer", component: CreateAnswer },
+  { path: "/answers/update/:id", title: "Update Answer", component: UpdateAnswer },
 ];
 
 const routes = [...coreRoutes];

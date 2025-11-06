@@ -1,10 +1,7 @@
-// SecurityQuestion.ts
-import { Answer } from "./Answer";
-
-export class SecurityQuestion {
-  id!: number;
-  name!: string;
-  description!: string;
-
-  answers: Answer[] = [];
+export interface SecurityQuestion {
+  id: number;
+  name: string;
+  description?: string;
+  created_at?: string;
+  updated_at?: string;
 }

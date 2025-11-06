@@ -19,7 +19,6 @@
     "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.4",
     "@reduxjs/toolkit": "^2.9.1",
-    "@types/react-bootstrap": "^1.0.1",
     "apexcharts": "^3.41.0",
     "axios": "^1.12.2",
     "bootstrap": "^5.3.8",
@@ -44,6 +43,7 @@
   },
   "devDependencies": {
     "@types/react": "^18.2.17",
+    "@types/react-bootstrap": "^1.0.1",
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.14",

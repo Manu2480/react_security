@@ -1,6 +1,7 @@
 // src/firebaseConfig.ts
 // -----------------------------------------------------------------------------
-// Este archivo configura Firebase y define los proveedores de autenticación.
+// Este archivo configura Firebase y define los proveedores de autenticación
+// (Google, GitHub y Microsoft) para que puedan ser usados en toda la app.
 // -----------------------------------------------------------------------------
 
 import { initializeApp } from "firebase/app";
@@ -11,7 +12,11 @@ import {
   OAuthProvider,
 } from "firebase/auth";
 
-// Configuración del proyecto Firebase (datos del dashboard)
+// -----------------------------------------------------------------------------
+// Configuración de Firebase
+// Estos valores se obtienen desde el panel de Firebase (Project Settings).
+// Son necesarios para conectar nuestra aplicación con el proyecto Firebase.
+// -----------------------------------------------------------------------------
 const firebaseConfig = {
   apiKey: "AIzaSyBiFL4itZPllT1LHJ5waFQVyqKtZ1CPP2A",
   authDomain: "security-2025-02.firebaseapp.com",
@@ -22,16 +27,29 @@ const firebaseConfig = {
   measurementId: "G-KNWTQS3NEN",
 };
 
-// Inicializamos Firebase una sola vez
+// -----------------------------------------------------------------------------
+// Inicializamos Firebase
+// La función initializeApp() conecta React con Firebase usando la configuración.
+// -----------------------------------------------------------------------------
 const app = initializeApp(firebaseConfig);
 
-// Obtenemos la instancia de autenticación
+// -----------------------------------------------------------------------------
+// Configuramos la autenticación
+// getAuth() devuelve una instancia del servicio de autenticación de Firebase,
+// que luego usamos para manejar logins, logouts, etc.
+// -----------------------------------------------------------------------------
 const auth = getAuth(app);
 
-// Creamos los proveedores que vamos a usar (Google, GitHub, Microsoft)
-const googleProvider = new GoogleAuthProvider();
-const githubProvider = new GithubAuthProvider();
-const microsoftProvider = new OAuthProvider("microsoft.com");
+// -----------------------------------------------------------------------------
+// Creamos los proveedores de autenticación
+// Cada proveedor permite iniciar sesión con una plataforma distinta.
+// -----------------------------------------------------------------------------
+const googleProvider = new GoogleAuthProvider();     // Login con Google
+const githubProvider = new GithubAuthProvider();     // Login con GitHub
+const microsoftProvider = new OAuthProvider("microsoft.com"); // Login con Microsoft
 
-// Exportamos para poder usarlos en otros archivos (AuthContext)
+// -----------------------------------------------------------------------------
+// Exportamos todo lo necesario
+// Así podemos importar `auth` y los proveedores desde el contexto de autenticación.
+// -----------------------------------------------------------------------------
 export { auth, googleProvider, githubProvider, microsoftProvider };

@@ -1,3 +1,10 @@
+// src/pages/UserRoles/CreateUserRole.tsx
+// -----------------------------------------------------------------------------
+// Página encargada de asignar un rol a un usuario existente.
+// Usa un formulario genérico para crear una nueva relación UserRole.
+// Integra servicios de usuario, rol y user-role, y muestra feedback con SweetAlert.
+// -----------------------------------------------------------------------------
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -10,15 +17,18 @@ import { UserRole } from "../../models/UserRole";
 import { User } from "../../models/User";
 import { Role } from "../../models/Role";
 
+// Componente principal de la página
 const CreateUserRole: React.FC = () => {
   const [template, setTemplate] = useState<any | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const navigate = useNavigate();
 
+  // useEffect inicial para cargar los datos requeridos del backend
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Se obtienen en paralelo todos los usuarios y roles disponibles
         const [usersData, rolesData] = await Promise.all([
           userService.getUsers(),
           roleService.getRoles(),
@@ -27,6 +37,7 @@ const CreateUserRole: React.FC = () => {
         setUsers(usersData || []);
         setRoles(rolesData || []);
 
+        // Se define el template base del formulario
         setTemplate({
           userId: "",
           roleId: "",
@@ -41,14 +52,17 @@ const CreateUserRole: React.FC = () => {
     fetchData();
   }, []);
 
+  // Función auxiliar para formatear la fecha en formato compatible con el backend
   const formatDateTime = (date: string): string => {
-    // Si la fecha ya viene en formato correcto, se devuelve igual
     if (!date) return "";
     const d = new Date(date);
     const pad = (n: number) => String(n).padStart(2, "0");
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(
+      d.getHours()
+    )}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   };
 
+  // Maneja la creación de la relación usuario-rol al enviar el formulario
   const handleCreate = async (values: any) => {
     try {
       const userId = Number(values.userId);
@@ -59,6 +73,7 @@ const CreateUserRole: React.FC = () => {
         return;
       }
 
+      // Se construye el payload con los datos mínimos requeridos
       const payload: Partial<UserRole> = {
         userId,
         roleId,
@@ -69,6 +84,7 @@ const CreateUserRole: React.FC = () => {
       console.log("Creando relación usuario-rol:", payload);
       await userRoleService.createUserRole(payload);
 
+      // Mensaje de éxito y redirección al listado
       await Swal.fire({
         title: "Éxito",
         text: "Rol asignado correctamente al usuario.",
@@ -89,8 +105,10 @@ const CreateUserRole: React.FC = () => {
     }
   };
 
+  // Si aún no se ha cargado la plantilla, muestra un indicador simple
   if (!template) return <div>Cargando formulario...</div>;
 
+  // Configura dinámicamente las opciones del formulario genérico
   const dynamicTemplate = {
     ...template,
     userId: {
@@ -105,6 +123,7 @@ const CreateUserRole: React.FC = () => {
     },
   };
 
+  // Renderiza el formulario en pantalla
   return (
     <div>
       <Breadcrumb pageName="Asignar Rol a Usuario" />
